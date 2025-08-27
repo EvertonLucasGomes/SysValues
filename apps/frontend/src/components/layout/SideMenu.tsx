@@ -87,7 +87,7 @@ export function SideMenu({ children }: SideMenuProps) {
           `}
         >
           <div className="flex flex-col h-full">
-            {/* Logo/Site name - Mais institucional */}
+            {/* Logo/Site name - Mais institucional
             <div className="p-6 border-b-2 border-agro-500 bg-agro-50">
               <h2 className="text-xl font-display font-bold text-agro-700">
                 AgroSys
@@ -96,7 +96,7 @@ export function SideMenu({ children }: SideMenuProps) {
                 Sistema de Gestão Agropecuária
               </p>
               <div className="mt-2 w-8 h-1 bg-agro-500 rounded"></div>
-            </div>
+            </div> */}
 
             {/* Navigation */}
             <nav className="flex-1 p-4 space-y-2" role="navigation">
@@ -171,6 +171,8 @@ export function SideMenu({ children }: SideMenuProps) {
         {/* Main content */}
         <main className="flex-1 flex flex-col min-w-0">
           {/* Page header - Mais institucional */}
+          {/* Comentar a div inteira */}
+          {/*
           <div className="bg-white border-b-2 border-agro-500 px-6 py-4 shadow-institutional">
             <div className="flex items-center justify-between">
               <div>
@@ -183,7 +185,6 @@ export function SideMenu({ children }: SideMenuProps) {
                 </p>
               </div>
 
-              {/* Notifications/User actions */}
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 px-3 py-1 bg-agro-50 rounded-lg border border-agro-200">
                   <span className="text-sm font-semibold text-agro-700">
@@ -197,6 +198,7 @@ export function SideMenu({ children }: SideMenuProps) {
               </div>
             </div>
           </div>
+          */}
 
           {/* Page content */}
           <section className="flex-1 p-6 overflow-auto bg-neutral-50">
