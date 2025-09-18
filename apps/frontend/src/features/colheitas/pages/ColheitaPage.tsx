@@ -211,12 +211,12 @@ function ColheitaPage() {
             />
           </div>
 
-          {/* Ações */}
+          {/* Ações
           <ActionButtons
             actions={actions}
             title="AÇÕES"
             className="border-agro-200"
-          />
+          /> */}
         </div>
       </div>
     </SideMenu>
