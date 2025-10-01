@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { SideMenu } from "@/components/layout/SideMenu";
 import { toolService, authService, type Tool } from "@/services/api";
 import { routes } from "@/routes/routes";
 import { ActionButtons } from "@/components/ui/ActionButtons";
 import { FaTools, FaEdit, FaTrash, FaHandshake, FaUndo } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
 
 function FerramentasPage() {
   const navigate = useNavigate();
@@ -36,9 +37,14 @@ function FerramentasPage() {
     }
   }, [filter]);
 
-  useEffect(() => {
-    fetchTools();
-  }, [fetchTools]);
+  const { data, isLoading } = useQuery({
+    queryKey: ["ferramentas"],
+    queryFn: () => fetchTools(),
+  });
+
+  //  useEffect(() => {
+  //    fetchTools();
+  //  }, [fetchTools]);
 
   const handleFilterChange = async (newFilter: string) => {
     setFilter(newFilter);
