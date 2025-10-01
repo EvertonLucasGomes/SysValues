@@ -41,6 +41,10 @@ export type {
   Harvest,
   CreateHarvestRequest,
   UpdateHarvestRequest,
+  //adicionados agora
+  PaginatedHarvests,
+  Meta,
+  PaginatedResponse,
 } from "./harvestService";
 export type {
   SaleWithItems,
@@ -50,7 +54,7 @@ export type {
 } from "./salesService";
 export type { DashboardStatistics } from "./dashboardService";
 export type { Alert, RecentActivity } from "./alertService";
-export type { Insumo } from "../../../shared/types/insumo";
+// export type { Insumo } from "../../../shared/types/insumo";
 export type { ApiResponse, ApiError } from "./client";
 
 // Convenience exports (import services in components instead)

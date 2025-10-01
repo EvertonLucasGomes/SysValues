@@ -45,8 +45,14 @@ export class HarvestsController {
   @RequirePermissions(EPermission.READ_HARVEST)
   @ApiOperation({ summary: "Listar todas as colheitas" })
   @ApiResponse({ status: 200, description: "Lista de colheitas retornada" })
-  findAll() {
-    return this.harvestsService.findAll();
+  findAllPaginated(
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 10
+  ) {
+    const p = Number(page);
+    const l = Number(limit);
+
+    return this.harvestsService.findAllPaginated(p, l);
   }
 
   @Get(":id")

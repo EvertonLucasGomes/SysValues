@@ -7,21 +7,22 @@ import { DataTable } from "@/components/ui/DataTable";
 import { ActionButtons } from "@/components/ui/ActionButtons";
 import { FaPlus, FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { useHarvest } from "@/hooks/useHarvest";
-import { useQuery } from "@tanstack/react-query";
+// import { useQuery } from "@tanstack/react-query";
+import { Pagination } from "@/components/ui/Pagination";
 
 function ColheitaPage() {
   const navigate = useNavigate();
-  const { harvests, loading, error, fetchHarvests, deleteHarvest } =
+  const { harvests, loading, error, fetchHarvests, deleteHarvest, currentPage, totalPages, itemsPerPage, totalItems, setPage } =
     useHarvest();
 
   // useEffect(() => {
   //   fetchHarvests();
   // }, [fetchHarvests]);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["colheitas"],
-    queryFn: () => fetchHarvests(),
-  });
+  // const { data, isLoading } = useQuery({
+  //   queryKey: ["colheitas"],
+  //   queryFn: () => fetchHarvests(),
+  // });
 
   const handleDelete = async (harvestId: string) => {
     if (window.confirm("Tem certeza que deseja excluir esta colheita?")) {
@@ -216,6 +217,15 @@ function ColheitaPage() {
               }
             />
           </div>
+          {/* NOVO: Componente de Paginação */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setPage} // <--- Passamos a função setPage do hook
+          />
+
 
           {/* Ações
           <ActionButtons
