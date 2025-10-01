@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { SideMenu } from "@/components/layout/SideMenu";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { FilterBar } from "@/components/ui/FilterBar";
 import { DataTable } from "@/components/ui/DataTable";
+import { ActionButtons } from "@/components/ui/ActionButtons";
 import { FaPlus, FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { useHarvest } from "@/hooks/useHarvest";
 import { useQuery } from "@tanstack/react-query";
@@ -11,6 +13,10 @@ function ColheitaPage() {
   const navigate = useNavigate();
   const { harvests, loading, error, fetchHarvests, deleteHarvest } =
     useHarvest();
+
+  // useEffect(() => {
+  //   fetchHarvests();
+  // }, [fetchHarvests]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["colheitas"],
@@ -75,6 +81,31 @@ function ColheitaPage() {
         { value: "cancelada", label: "Cancelada" },
       ],
       placeholder: "Filtrar por status",
+    },
+  ];
+
+  const actions = [
+    {
+      label: "VISUALIZAR",
+      onClick: () => {
+        // Implementar visualização da colheita
+      },
+      variant: "primary" as const,
+      icon: <FaEye size={14} />,
+    },
+    {
+      label: "EDITAR",
+      onClick: () => navigate("/colheita/editar"),
+      variant: "primary" as const,
+      icon: <FaEdit size={14} />,
+    },
+    {
+      label: "EXCLUIR",
+      onClick: () => {
+        // Implementar exclusão da colheita
+      },
+      variant: "danger" as const,
+      icon: <FaTrash size={14} />,
     },
   ];
 
@@ -150,33 +181,48 @@ function ColheitaPage() {
                 status: harvest.status,
               }))}
               className="border-agro-200"
-              actions={(row) => (
-                <div className="flex justify-center gap-2">
-                  <button
-                    onClick={() => navigate(`/colheita/visualizar/${row.id}`)}
-                    className="btn-primary p-1 rounded"
-                    title="Visualizar"
-                  >
-                    <FaEye size={12} />
-                  </button>
-                  <button
-                    onClick={() => navigate(`/colheita/editar/${row.id}`)}
-                    className="btn-primary p-1 rounded"
-                    title="Editar"
-                  >
-                    <FaEdit size={12} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(row.id as string)}
-                    className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
-                    title="Excluir"
-                  >
-                    <FaTrash size={12} />
-                  </button>
+              actions={
+                <div className="flex gap-2">
+                  {harvests.map((harvest) => (
+                    <div key={harvest.id} className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          navigate(`/colheita/visualizar/${harvest.id}`)
+                        }
+                        className="btn-primary p-1 rounded"
+                        title="Visualizar"
+                      >
+                        <FaEye size={12} />
+                      </button>
+                      <button
+                        onClick={() =>
+                          navigate(`/colheita/editar/${harvest.id}`)
+                        }
+                        className="btn-primary p-1 rounded"
+                        title="Editar"
+                      >
+                        <FaEdit size={12} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(harvest.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
+                        title="Excluir"
+                      >
+                        <FaTrash size={12} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              )}
+              }
             />
           </div>
+
+          {/* Ações
+          <ActionButtons
+            actions={actions}
+            title="AÇÕES"
+            className="border-agro-200"
+          /> */}
         </div>
       </div>
     </SideMenu>

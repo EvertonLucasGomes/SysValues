@@ -9,7 +9,7 @@ interface Column {
 interface DataTableProps {
   columns: Column[];
   data: Record<string, string | number | ReactNode>[];
-  actions?: (row: Record<string, string | number | ReactNode>) => ReactNode; // função por linha
+  actions?: ReactNode;
   className?: string;
 }
 
@@ -36,7 +36,7 @@ export function DataTable({
                 </th>
               ))}
               {actions && (
-                <th className="px-6 py-3 text-center text-xs font-bold text-agro-700 uppercase tracking-wider border-b border-agro-200">
+                <th className="px-6 py-3 text-right text-xs font-bold text-agro-700 uppercase tracking-wider border-b border-agro-200">
                   Ações
                 </th>
               )}
@@ -57,9 +57,7 @@ export function DataTable({
                 ))}
                 {actions && (
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                    <div className="flex justify-center gap-2">
-                      {actions(row)}
-                    </div>
+                    <div className="flex justify-center">{actions}</div>
                   </td>
                 )}
               </tr>

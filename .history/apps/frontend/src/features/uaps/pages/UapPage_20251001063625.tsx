@@ -4,6 +4,7 @@ import { SideMenu } from "../../../components/layout/SideMenu";
 import { PageHeader } from "../../../components/ui/PageHeader";
 import { FilterBar } from "../../../components/ui/FilterBar";
 import { DataTable } from "../../../components/ui/DataTable";
+import { ActionButtons } from "../../../components/ui/ActionButtons";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { useUap } from "@/hooks/useUap";
 
@@ -45,6 +46,23 @@ function UapPage() {
         { value: "nordeste", label: "Seção Nordeste" },
       ],
       placeholder: "Filtrar por localização",
+    },
+  ];
+
+  const actions = [
+    {
+      label: "EDITAR",
+      onClick: () => navigate("/uap/editar"),
+      variant: "primary" as const,
+      icon: <FaEdit size={14} />,
+    },
+    {
+      label: "EXCLUIR",
+      onClick: () => {
+        // Implementar ação de exclusão
+      },
+      variant: "danger" as const,
+      icon: <FaTrash size={14} />,
     },
   ];
 
@@ -114,26 +132,37 @@ function UapPage() {
                 responsible: uap.responsible,
               }))}
               className="border-agro-200"
-              actions={(uap) => (
-                <div className="flex justify-center gap-2">
-                  <button
-                    onClick={() => navigate(`/uap/editar/${uap.id}`)}
-                    className="btn-primary p-1 rounded"
-                    title="Editar"
-                  >
-                    <FaEdit size={12} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(uap.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
-                    title="Excluir"
-                  >
-                    <FaTrash size={12} />
-                  </button>
+              actions={
+                <div className="flex gap-2">
+                  {uaps.map((uap) => (
+                    <div key={uap.id} className="flex gap-2">
+                      <button
+                        onClick={() => navigate(`/uap/editar/${uap.id}`)}
+                        className="btn-primary p-1 rounded"
+                        title="Editar"
+                      >
+                        <FaEdit size={12} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(uap.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
+                        title="Excluir"
+                      >
+                        <FaTrash size={12} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              )}
+              }
             />
           </div>
+
+          {/* Ações
+          <ActionButtons
+            actions={actions}
+            title="AÇÕES"
+            className="border-agro-200"
+          /> */}
         </div>
       </div>
     </SideMenu>
