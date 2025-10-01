@@ -5,6 +5,10 @@ import { PageHeader } from "../../../components/ui/PageHeader";
 import { FilterBar } from "../../../components/ui/FilterBar";
 import { DataTable } from "../../../components/ui/DataTable";
 import { ActionButtons } from "../../../components/ui/ActionButtons";
+// Importação do componente de Paginação já estava correta, mas ajustei o caminho relativo:
+import { Pagination } from "../../../components/ui/Pagination"; 
+
+
 import {
   FaPlus,
   FaEye,
@@ -17,11 +21,27 @@ import { useSales } from "../../../hooks/useSales";
 
 function VendasPage() {
   const navigate = useNavigate();
-  const { sales, loading, error, fetchSales, deleteSale } = useSales();
+  // MODIFICADO: Desestruturando os dados de paginação do useSales
+  const { 
+    sales, 
+    loading, 
+    error, 
+    fetchSales, 
+    deleteSale,
+    currentPage, 
+    totalPages, 
+    itemsPerPage, 
+    totalItems, 
+    setPage 
+  } = useSales();
 
+  // O bloco useEffect é removido, pois a lógica de busca inicial e por página
+  // está sendo gerenciada dentro do useSales.ts agora.
+  /*
   useEffect(() => {
     fetchSales();
   }, [fetchSales]);
+  */
 
   const handleDelete = async (saleId: string) => {
     if (window.confirm("Tem certeza que deseja excluir esta venda?")) {
@@ -198,6 +218,17 @@ function VendasPage() {
                   ))}
                 </div>
               }
+            />
+          </div>
+          
+          {/* NOVO: Componente de Paginação */}
+          <div className="w-full"> 
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setPage} // Passa a função setPage do hook
             />
           </div>
 

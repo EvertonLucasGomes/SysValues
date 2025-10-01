@@ -43,9 +43,29 @@ export class SalesService {
     return sale;
   }
 
-  async findAll(): Promise<SaleWithItems[]> {
-    return await this.saleRepository.findAll();
+  async findAllPaginated(page: number, limit: number) {
+    const offset = (page - 1) * limit;
+
+    const[sales, total] = await this.saleRepository.findAndCount({
+      limit,
+      offset,
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return{
+      data: sales,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+      },
+    };
   }
+  // async findAll(): Promise<SaleWithItems[]> {
+  //   return await this.saleRepository.findAll();
+  // }
 
   async findOne(id: string): Promise<SaleWithItems> {
     const sale = await this.saleRepository.findOne(id);

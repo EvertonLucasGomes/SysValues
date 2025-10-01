@@ -51,6 +51,7 @@ export type {
   CreateSaleRequest,
   UpdateSaleRequest,
   SaleFilters,
+  PaginatedSales, //essa linha adicionada
 } from "./salesService";
 export type { DashboardStatistics } from "./dashboardService";
 export type { Alert, RecentActivity } from "./alertService";

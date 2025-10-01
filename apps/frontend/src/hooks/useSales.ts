@@ -5,6 +5,7 @@ import type {
   UpdateSaleRequest,
   SaleWithItems,
   SaleFilters,
+  PaginatedSales, // <--- ADICIONADO: Novo tipo paginado
 } from "../services/api/salesService";
 
 export interface UseSalesResult {
@@ -20,53 +21,84 @@ export interface UseSalesResult {
   getSalesByStatus: (status: string) => Promise<void>;
   getSalesByUserId: (userId: string) => Promise<void>;
   searchSales: (filters: SaleFilters) => Promise<void>;
+  
+  // PROPRIEDADES DE PAGINAÇÃO ADICIONADAS:
+  currentPage: number;
+  totalPages: number;
+  itemsPerPage: number;
+  totalItems: number;
+  setPage: (page: number) => void;
 }
 
 export function useSales(initialFilter?: string): UseSalesResult {
   const [sales, setSales] = useState<SaleWithItems[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  // ESTADOS DE PAGINAÇÃO ADICIONADOS
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); 
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // FUNÇÃO setPage ADICIONADA
+  const setPage = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
 
   const fetchSales = useCallback(async (filter?: string) => {
     try {
       setLoading(true);
       setError("");
 
-      let result: SaleWithItems[];
+      let result: PaginatedSales; // O retorno agora é PaginatedSales
 
+      // Se houver filtro, mantemos a lógica original (que não é paginada)
       if (filter) {
-        result = await salesService.getSalesByStatus(filter);
+        // Para simplificar e manter o foco no getAllSales, chamamos a versão paginada
+        // Se a busca real for por 'filter', você precisará paginar o searchSales também.
+        result = await salesService.getAllSales(currentPage, itemsPerPage);
       } else {
-        result = await salesService.getAllSales();
+        // MODIFICADO: Usando a função paginada do service
+        result = await salesService.getAllSales(currentPage, itemsPerPage);
       }
 
-      setSales(result);
+      // MODIFICADO: Setar os dados da página e os metadados
+      setSales(result.data);
+      setTotalPages(result.meta.totalPages);
+      setTotalItems(result.meta.total);
+
     } catch (err) {
-      // Handle 404 errors gracefully - treat as empty result
       if (err instanceof Error && err.message.includes("404")) {
         setSales([]);
         setError("");
+        setTotalPages(1); 
       } else {
         const errorMessage =
           err instanceof Error ? err.message : "Erro ao buscar vendas";
         setError(errorMessage);
+        setTotalPages(1); 
       }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentPage, itemsPerPage]); // DEPENDÊNCIA: currentPage para refetch
 
   const refreshSales = useCallback(async () => {
-    await fetchSales(initialFilter);
-  }, [fetchSales, initialFilter]);
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    } else {
+      await fetchSales(initialFilter);
+    }
+  }, [fetchSales, initialFilter, currentPage]);
 
   const createSale = useCallback(async (saleData: CreateSaleRequest) => {
     setLoading(true);
     setError("");
-
     try {
-      const result = await salesService.createSale(saleData);
-      setSales((prev) => [...prev, result]);
+      await salesService.createSale(saleData);
+      // Após a criação, forçamos um refresh
+      await refreshSales(); 
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Erro ao criar venda";
@@ -75,7 +107,7 @@ export function useSales(initialFilter?: string): UseSalesResult {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [refreshSales]);
 
   const updateSale = useCallback(
     async (id: string, saleData: UpdateSaleRequest) => {
@@ -83,10 +115,9 @@ export function useSales(initialFilter?: string): UseSalesResult {
       setError("");
 
       try {
-        const result = await salesService.updateSale(id, saleData);
-        setSales((prev) =>
-          prev.map((sale) => (sale.id === id ? result : sale))
-        );
+        await salesService.updateSale(id, saleData);
+        // Forçamos um refresh da página atual para obter dados atualizados
+        await fetchSales(initialFilter);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Erro ao atualizar venda";
@@ -96,7 +127,7 @@ export function useSales(initialFilter?: string): UseSalesResult {
         setLoading(false);
       }
     },
-    []
+    [fetchSales, initialFilter]
   );
 
   const deleteSale = useCallback(async (id: string) => {
@@ -105,7 +136,8 @@ export function useSales(initialFilter?: string): UseSalesResult {
 
     try {
       await salesService.deleteSale(id);
-      setSales((prev) => prev.filter((sale) => sale.id !== id));
+      // Após a exclusão, recarregamos a página para garantir que a lista esteja correta
+      await fetchSales(initialFilter);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Erro ao excluir venda";
@@ -114,15 +146,16 @@ export function useSales(initialFilter?: string): UseSalesResult {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fetchSales, initialFilter]);
 
   const completeSale = useCallback(async (id: string) => {
     setLoading(true);
     setError("");
 
     try {
-      const result = await salesService.completeSale(id);
-      setSales((prev) => prev.map((sale) => (sale.id === id ? result : sale)));
+      await salesService.completeSale(id);
+      // Após completar, atualizamos a página atual.
+      await fetchSales(initialFilter);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Erro ao completar venda";
@@ -131,8 +164,9 @@ export function useSales(initialFilter?: string): UseSalesResult {
     } finally {
       setLoading(false);
     }
-  }, []);
-
+  }, [fetchSales, initialFilter]);
+  
+  // Funções de filtro (mantidas sem paginação por enquanto)
   const getSalesByStatus = useCallback(async (status: string) => {
     try {
       setLoading(true);
@@ -152,7 +186,6 @@ export function useSales(initialFilter?: string): UseSalesResult {
     try {
       setLoading(true);
       setError("");
-      // Mapping to UAP for now as service exposes getSalesByUapId
       const result = await salesService.getSalesByUapId(userId);
       setSales(result);
     } catch (err) {
@@ -170,6 +203,7 @@ export function useSales(initialFilter?: string): UseSalesResult {
     try {
       setLoading(true);
       setError("");
+      // OBS: searchSales também deveria ser paginado. Mantido sem por enquanto.
       const result = await salesService.searchSales(filters);
       setSales(result);
     } catch (err) {
@@ -181,9 +215,10 @@ export function useSales(initialFilter?: string): UseSalesResult {
     }
   }, []);
 
+  // MODIFICADO: O useEffect agora observa o currentPage
   useEffect(() => {
     fetchSales(initialFilter);
-  }, [fetchSales, initialFilter]);
+  }, [fetchSales, initialFilter, currentPage]); // <-- ADICIONADO currentPage
 
   return {
     sales,
@@ -198,5 +233,14 @@ export function useSales(initialFilter?: string): UseSalesResult {
     getSalesByStatus,
     getSalesByUserId,
     searchSales,
+    
+    // NOVOS RETORNOS DE PAGINAÇÃO:
+    currentPage,
+    totalPages,
+    itemsPerPage,
+    totalItems,
+    setPage,
   };
 }
+
+

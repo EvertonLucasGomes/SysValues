@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { CreateSaleDto } from "@shared/dto/sale/create-sale.dto";
 import { UpdateSaleDto } from "@shared/dto/sale/update-sale.dto";
-import { ISaleRepository } from "../sale.repository.interface";
+import { ISaleRepository, PaginationParams } from "../sale.repository.interface"; // <-- Importado PaginationParams
 import { SaleWithItems } from "@shared/types/product";
 import { ESaleStatus, SaleStatus } from "@shared/enums/product.enum";
 
@@ -80,6 +80,24 @@ export class SaleRepositoryPostgres implements ISaleRepository {
     });
     return sales.map(toDomainSale);
   }
+  
+  // NOVO MÉTODO ADICIONADO PARA PAGINAÇÃO
+  async findAndCount({ limit, offset }: PaginationParams): Promise<[SaleWithItems[], number]> {
+    // 1. Buscamos os itens da página atual (usando take e skip)
+    const sales = await this.prisma.sale.findMany({
+      take: limit, // 'take' no Prisma é o nosso 'limit'
+      skip: offset, // 'skip' no Prisma é o nosso 'offset'
+      select: saleSelect,
+      orderBy: { createdAt: "desc" },
+    });
+
+    // 2. Contamos o total de itens no banco de dados (sem filtro de paginação)
+    const total = await this.prisma.sale.count();
+
+    // 3. Retornamos [os dados da página, o total geral]
+    return [sales.map(toDomainSale), total];
+  }
+
 
   async findOne(id: string): Promise<SaleWithItems | null> {
     const sale = await this.prisma.sale.findUnique({
@@ -151,3 +169,8 @@ export class SaleRepositoryPostgres implements ISaleRepository {
     await this.prisma.sale.delete({ where: { id } });
   }
 }
+
+
+
+
+

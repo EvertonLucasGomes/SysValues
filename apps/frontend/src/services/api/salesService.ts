@@ -1,5 +1,10 @@
 import { apiClient } from "./client";
 
+//adicionando iportação dos tipos
+import type { Meta, PaginatedResponse} from "./index.ts";
+
+export type PaginatedSales = PaginatedResponse<SaleWithItems>
+
 export interface SaleWithItems {
   id: string;
   uapId: string;
@@ -53,8 +58,11 @@ export interface SaleFilters {
 }
 
 export class SalesService {
-  async getAllSales(): Promise<SaleWithItems[]> {
-    return await apiClient.get<SaleWithItems[]>("/sales");
+//getallsales adicionado
+  async getAllSales(page: number, limit: number): Promise<PaginatedSales> {
+    return await apiClient.get<PaginatedSales>(
+      `/sales?page=${page}&limit=${limit}`
+    );
   }
 
   async getSaleById(id: string): Promise<SaleWithItems> {

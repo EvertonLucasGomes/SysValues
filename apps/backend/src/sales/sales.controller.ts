@@ -6,7 +6,7 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
+  Query, // Importado para ler parâmetros da URL
   UseGuards,
   ParseUUIDPipe,
   Request,
@@ -55,16 +55,22 @@ export class SalesController {
     return this.salesService.create(dto);
   }
 
-  @Get()
+  @Get() // <--- MODIFICADO AQUI
   @RequirePermissions(EPermission.READ_SALE)
-  @ApiOperation({ summary: "Listar todas as vendas" })
+  @ApiOperation({ summary: "Listar todas as vendas (Paginado)" })
   @ApiResponse({
     status: 200,
     description: "Lista de vendas retornada com sucesso",
   })
-  async findAll(@Request() _req: any) {
-    // For now, show all sales for all users since sales are now linked to UAPs
-    return this.salesService.findAll();
+  findAllPaginated( // Método do Controller que lida com a paginação
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 10
+  ) {
+    const p = Number(page);
+    const l = Number(limit);
+
+    // CORREÇÃO: Chamando o novo método paginado do Service
+    return this.salesService.findAllPaginated(p, l);
   }
 
   @Get("filter/status")
@@ -137,3 +143,4 @@ export class SalesController {
     return this.salesService.cancelSale(id);
   }
 }
+
