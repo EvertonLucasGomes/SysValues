@@ -4,13 +4,14 @@ import { SideMenu } from "../../../components/layout/SideMenu";
 import { PageHeader } from "../../../components/ui/PageHeader";
 import { FilterBar } from "../../../components/ui/FilterBar";
 import { DataTable } from "../../../components/ui/DataTable";
+import { ActionButtons } from "../../../components/ui/ActionButtons";
 import {
   FaPlus,
   FaEye,
-  FaTrash,
-  FaDollarSign,
   FaFileAlt,
+  FaTrash,
   FaSearch,
+  FaDollarSign,
 } from "react-icons/fa";
 import { useSales } from "../../../hooks/useSales";
 
@@ -55,13 +56,13 @@ function VendasPage() {
   }));
 
   const columns = [
-    { key: "id", label: "N° Venda", align: "center" },
-    { key: "data", label: "Data", align: "center" },
-    { key: "cliente", label: "Cliente", align: "center" },
-    { key: "produto", label: "Produto", align: "center" },
-    { key: "quantidade", label: "Quantidade", align: "center" },
-    { key: "valor", label: "Valor", align: "center" },
-    { key: "status", label: "Status", align: "center" },
+    { key: "id", label: "N° Venda" },
+    { key: "data", label: "Data" },
+    { key: "cliente", label: "Cliente" },
+    { key: "produto", label: "Produto" },
+    { key: "quantidade", label: "Quantidade" },
+    { key: "valor", label: "Valor" },
+    { key: "status", label: "Status" },
   ];
 
   const filters = [
@@ -77,6 +78,32 @@ function VendasPage() {
     },
   ];
 
+  const actions = [
+    {
+      label: "Visualizar",
+      onClick: () => {
+        // Implementar visualização da venda
+      },
+      variant: "primary" as const,
+      icon: <FaEye size={14} />,
+    },
+    {
+      label: "Gerar NF",
+      onClick: () => navigate("/vendas/nota"),
+      variant: "primary" as const,
+      icon: <FaFileAlt size={14} />,
+    },
+    {
+      label: "Excluir",
+      onClick: () => {
+        // Implementar exclusão da venda
+      },
+      variant: "danger" as const,
+      icon: <FaTrash size={14} />,
+    },
+  ];
+
+  // Cálculos reais baseados nos dados
   const totalVendas = sales
     .filter((sale) => sale.status === "COMPLETED")
     .reduce((total, sale) => total + sale.totalAmount, 0);
@@ -117,7 +144,7 @@ function VendasPage() {
   return (
     <SideMenu title="Vendas">
       <div className="space-y-6">
-        {/* Header */}
+        {/* Header Actions - Mais institucional */}
         <PageHeader
           title="Gestão de Vendas"
           subtitle="Controle completo de vendas e receita"
@@ -131,7 +158,7 @@ function VendasPage() {
           </button>
         </PageHeader>
 
-        {/* Filters */}
+        {/* Filters - Mais robusto */}
         <FilterBar filters={filters}>
           <button className="btn-secondary flex items-center gap-2">
             <FaSearch size={14} />
@@ -139,33 +166,47 @@ function VendasPage() {
           </button>
         </FilterBar>
 
-        {/* Tabela de Vendas */}
+        {/* Main Content */}
         <div className="flex gap-6">
+          {/* Tabela de Vendas */}
           <div className="flex-1">
             <DataTable
               columns={columns}
               data={vendasData}
               className="border-agro-200"
-              renderActions={(row) => (
-                <div className="flex justify-center gap-2">
-                  <button
-                    onClick={() => navigate(`/vendas/visualizar/${row.id}`)}
-                    className="btn-primary p-1 rounded"
-                    title="Visualizar"
-                  >
-                    <FaEye size={12} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(row.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
-                    title="Excluir"
-                  >
-                    <FaTrash size={12} />
-                  </button>
+              actions={
+                <div className="flex gap-2">
+                  {sales.map((sale) => (
+                    <div key={sale.id} className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          navigate(`/vendas/visualizar/${sale.id}`)
+                        }
+                        className="btn-primary p-1 rounded"
+                        title="Visualizar"
+                      >
+                        <FaEye size={12} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(sale.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
+                        title="Excluir"
+                      >
+                        <FaTrash size={12} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              )}
+              }
             />
           </div>
+
+          {/* Painel de Ações
+          <ActionButtons
+            actions={actions}
+            title="AÇÕES"
+            className="border-agro-200"
+          /> */}
         </div>
 
         {/* Resumo Financeiro */}

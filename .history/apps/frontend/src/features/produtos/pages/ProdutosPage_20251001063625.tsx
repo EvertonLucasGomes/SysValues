@@ -4,6 +4,7 @@ import { SideMenu } from "@/components/layout/SideMenu";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { FilterBar } from "@/components/ui/FilterBar";
 import { DataTable } from "@/components/ui/DataTable";
+import { ActionButtons } from "@/components/ui/ActionButtons";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { useProduct } from "@/hooks/useProduct";
 
@@ -26,16 +27,14 @@ function ProdutosPage() {
     }
   };
 
-  // Colunas da tabela com alinhamento centralizado
   const columns = [
-    { key: "name", label: "NOME", align: "center" },
-    { key: "category", label: "CATEGORIA", align: "center" },
-    { key: "quantity", label: "QUANTIDADE", align: "center" },
-    { key: "price", label: "PREÇO", align: "center" },
-    { key: "status", label: "STATUS", align: "center" },
+    { key: "name", label: "NOME" },
+    { key: "category", label: "CATEGORIA" },
+    { key: "quantity", label: "QUANTIDADE" },
+    { key: "price", label: "PREÇO" },
+    { key: "status", label: "STATUS" },
   ];
 
-  // Filtros
   const filters = [
     {
       key: "category",
@@ -57,6 +56,23 @@ function ProdutosPage() {
         { value: "BAIXO_ESTOQUE", label: "Baixo Estoque" },
       ],
       placeholder: "Filtrar por status",
+    },
+  ];
+
+  const actions = [
+    {
+      label: "EDITAR",
+      onClick: () => navigate("/produtos/editar"),
+      variant: "primary" as const,
+      icon: <FaEdit size={14} />,
+    },
+    {
+      label: "EXCLUIR",
+      onClick: () => {
+        // Implementar ação de exclusão
+      },
+      variant: "danger" as const,
+      icon: <FaTrash size={14} />,
     },
   ];
 
@@ -117,11 +133,11 @@ function ProdutosPage() {
 
         {/* Main Content */}
         <div className="flex gap-6">
+          {/* Tabela */}
           <div className="flex-1">
             <DataTable
               columns={columns}
               data={products.map((product) => ({
-                id: product.id,
                 name: product.name,
                 category: product.category || "N/A",
                 quantity: product.quantity,
@@ -129,26 +145,39 @@ function ProdutosPage() {
                 status: product.status,
               }))}
               className="border-agro-200"
-              renderActions={(row) => (
-                <div className="flex justify-center gap-2">
-                  <button
-                    onClick={() => navigate(`/produtos/editar/${row.id}`)}
-                    className="btn-primary p-1 rounded"
-                    title="Editar"
-                  >
-                    <FaEdit size={12} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(row.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
-                    title="Excluir"
-                  >
-                    <FaTrash size={12} />
-                  </button>
+              actions={
+                <div className="flex gap-2">
+                  {products.map((product) => (
+                    <div key={product.id} className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          navigate(`/produtos/editar/${product.id}`)
+                        }
+                        className="btn-primary p-1 rounded"
+                        title="Editar"
+                      >
+                        <FaEdit size={12} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
+                        title="Excluir"
+                      >
+                        <FaTrash size={12} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              )}
+              }
             />
           </div>
+
+          {/* Ações
+          <ActionButtons
+            actions={actions}
+            title="AÇÕES"
+            className="border-agro-200"
+          /> */}
         </div>
       </div>
     </SideMenu>
