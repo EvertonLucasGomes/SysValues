@@ -7,15 +7,21 @@ import { DataTable } from "@/components/ui/DataTable";
 import { ActionButtons } from "@/components/ui/ActionButtons";
 import { FaPlus, FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { useHarvest } from "@/hooks/useHarvest";
+import { useQuery } from "@tanstack/react-query";
 
 function ColheitaPage() {
   const navigate = useNavigate();
   const { harvests, loading, error, fetchHarvests, deleteHarvest } =
     useHarvest();
 
-  useEffect(() => {
-    fetchHarvests();
-  }, [fetchHarvests]);
+  // useEffect(() => {
+  //   fetchHarvests();
+  // }, [fetchHarvests]);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["colheitas"],
+    queryFn: () => fetchHarvests(),
+  });
 
   const handleDelete = async (harvestId: string) => {
     if (window.confirm("Tem certeza que deseja excluir esta colheita?")) {
