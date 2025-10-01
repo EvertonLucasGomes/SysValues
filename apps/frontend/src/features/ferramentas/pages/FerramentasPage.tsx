@@ -241,12 +241,12 @@ function FerramentasPage() {
           </div>
         </div>
 
-        {/* Área de AÇÕES */}
+        {/* Área de AÇÕES
         <ActionButtons
           actions={actions}
           title="AÇÕES"
           className="border-agro-200"
-        />
+        /> */}
       </div>
     </SideMenu>
   );

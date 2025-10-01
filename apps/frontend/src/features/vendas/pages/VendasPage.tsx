@@ -201,12 +201,12 @@ function VendasPage() {
             />
           </div>
 
-          {/* Painel de Ações */}
+          {/* Painel de Ações
           <ActionButtons
             actions={actions}
             title="AÇÕES"
             className="border-agro-200"
-          />
+          /> */}
         </div>
 
         {/* Resumo Financeiro */}
