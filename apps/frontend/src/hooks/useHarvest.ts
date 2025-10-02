@@ -134,4 +134,3 @@ export function useHarvest(initialFilter?: string): UseHarvestResult {
     getHarvestsByCycle,
   };
 }
-

@@ -61,6 +61,7 @@ function FerramentasPage() {
     { key: "toolName", label: "NOME" },
     { key: "status", label: "STATUS" },
     { key: "responsiblePerson", label: "RESPONSÁVEL" },
+    { key: "actions", label: "AÇÕES" }, // nova coluna para os botões
   ];
 
   const filters = [
@@ -131,40 +132,34 @@ function FerramentasPage() {
                       ? "Emprestada"
                       : "Solicitada",
                   responsiblePerson: tool.responsiblePerson || "-",
+                  actions: canManageTools && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `${routes.navigation.editarFerramenta}?id=${tool.id}`
+                          )
+                        }
+                        className="btn-primary p-1 rounded"
+                        title="Editar"
+                      >
+                        <FaEdit size={12} />
+                      </button>
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `${routes.navigation.excluirFerramenta}?id=${tool.id}`
+                          )
+                        }
+                        className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
+                        title="Excluir"
+                      >
+                        <FaTrash size={12} />
+                      </button>
+                    </div>
+                  ),
                 }))}
                 className="border-agro-200"
-                actions={
-                  canManageTools && (
-                    <div className="flex gap-2">
-                      {paginatedData.map((tool) => (
-                        <div key={tool.id} className="flex gap-2">
-                          <button
-                            onClick={() =>
-                              navigate(
-                                `${routes.navigation.editarFerramenta}?id=${tool.id}`
-                              )
-                            }
-                            className="btn-primary p-1 rounded"
-                            title="Editar"
-                          >
-                            <FaEdit size={12} />
-                          </button>
-                          <button
-                            onClick={() =>
-                              navigate(
-                                `${routes.navigation.excluirFerramenta}?id=${tool.id}`
-                              )
-                            }
-                            className="bg-red-500 hover:bg-red-600 text-white p-1 rounded"
-                            title="Excluir"
-                          >
-                            <FaTrash size={12} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )
-                }
               />
             )}
           </div>
