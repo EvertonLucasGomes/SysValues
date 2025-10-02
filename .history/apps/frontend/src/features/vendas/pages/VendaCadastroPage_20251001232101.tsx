@@ -33,30 +33,27 @@ function VendaCadastroPage() {
     observacoes: "",
   });
 
-  // Buscar produtos e UAPs
   useEffect(() => {
     fetchProducts();
     fetchUaps();
   }, [fetchProducts, fetchUaps]);
 
-  // Atualizar valor total sempre que quantidade, preço ou desconto mudarem
-  useEffect(() => {
-    const quantidade = parseFloat(formData.quantidade || "0");
-    const preco = parseFloat(formData.precoUnitario || "0");
-    const desconto = parseFloat(formData.desconto || "0");
-
-    if (!isNaN(quantidade) && !isNaN(preco)) {
-      let total = quantidade * preco;
-      if (!isNaN(desconto) && desconto > 0) {
-        total = total * (1 - desconto / 100);
-      }
-      setFormData((prev) => ({ ...prev, valorTotal: total.toFixed(2) }));
-    }
-  }, [formData.quantidade, formData.precoUnitario, formData.desconto]);
-
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => {
       const next = { ...prev, [field]: value };
+
+      // calcular total sempre que quantidade, preço ou desconto mudarem
+      const quantidade = parseFloat(next.quantidade || "0");
+      const preco = parseFloat(next.precoUnitario || "0");
+      const desconto = parseFloat(next.desconto || "0");
+
+      if (!isNaN(quantidade) && !isNaN(preco)) {
+        let total = quantidade * preco;
+        if (!isNaN(desconto) && desconto > 0) {
+          total = total * (1 - desconto / 100);
+        }
+        next.valorTotal = total.toFixed(2);
+      }
 
       // Atualizar precoUnitario se selecionar produto
       if (field === "produto") {
@@ -84,18 +81,13 @@ function VendaCadastroPage() {
     }
 
     try {
-      // calcular unitPrice já com desconto
-      const precoComDesconto =
-        parseFloat(formData.precoUnitario) *
-        (1 - parseFloat(formData.desconto || "0") / 100);
-
       const saleData = {
         uapId: formData.uapId,
         items: [
           {
             productId: formData.produto,
             quantity: parseInt(formData.quantidade),
-            unitPrice: precoComDesconto,
+            unitPrice: parseFloat(formData.precoUnitario),
             totalPrice: parseFloat(formData.valorTotal),
           },
         ],
@@ -115,14 +107,16 @@ function VendaCadastroPage() {
   return (
     <SideMenu title="Vendas">
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
         <PageHeader
           title="Nova Venda"
           subtitle="Preencha os dados para registrar uma nova venda"
         />
 
+        {/* Form */}
         <div className="card p-8 border-agro-200">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* UAP e Produto */}
+            {/* UAP and Product Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField label="UAP" required>
                 <div className="relative">
@@ -169,7 +163,7 @@ function VendaCadastroPage() {
               </FormField>
             </div>
 
-            {/* Quantidade e Data */}
+            {/* Quantity and Date Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField label="Quantidade" required>
                 <div className="relative">
@@ -205,7 +199,7 @@ function VendaCadastroPage() {
               </FormField>
             </div>
 
-            {/* Preço, Desconto e Valor Total */}
+            {/* Price Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField label="Preço Unitário" required>
                 <div className="relative">
@@ -263,7 +257,7 @@ function VendaCadastroPage() {
               </FormField>
             </div>
 
-            {/* Pagamento e Entrega */}
+            {/* Payment and Delivery */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField label="Forma de Pagamento" required>
                 <select
@@ -300,7 +294,7 @@ function VendaCadastroPage() {
               </FormField>
             </div>
 
-            {/* Observações */}
+            {/* Observations */}
             <FormField label="Observações">
               <textarea
                 className="input-field"
@@ -313,7 +307,7 @@ function VendaCadastroPage() {
               />
             </FormField>
 
-            {/* Botões */}
+            {/* Action Buttons */}
             <div className="flex justify-center gap-4 pt-4">
               <button
                 type="submit"
@@ -339,7 +333,7 @@ function VendaCadastroPage() {
           </form>
         </div>
 
-        {/* Ajuda */}
+        {/* Help Section */}
         <div className="card p-6 bg-blue-50 border-blue-200">
           <h3 className="text-lg font-semibold text-blue-900 mb-2">
             💡 Dicas para uma venda eficiente
