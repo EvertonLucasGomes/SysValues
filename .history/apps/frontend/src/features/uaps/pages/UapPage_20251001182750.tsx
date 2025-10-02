@@ -25,12 +25,11 @@ function UapPage() {
     }
   };
 
-  // Todas as colunas centralizadas
   const columns = [
-    { key: "name", label: "UAP", align: "center" },
-    { key: "location", label: "LOCALIZAÇÃO", align: "center" },
-    { key: "area", label: "ÁREA", align: "center" },
-    { key: "responsible", label: "RESPONSÁVEL", align: "center" },
+    { key: "name", label: "UAP" },
+    { key: "location", label: "LOCALIZAÇÃO" },
+    { key: "area", label: "ÁREA" },
+    { key: "responsible", label: "RESPONSÁVEL" },
   ];
 
   const filters = [
@@ -104,19 +103,19 @@ function UapPage() {
 
         {/* Main Content */}
         <div className="flex gap-6">
+          {/* Tabela */}
           <div className="flex-1">
             <DataTable
               columns={columns}
               data={uaps.map((uap) => ({
-                id: uap.id,
                 name: uap.name,
                 location: uap.location,
                 area: `${uap.area} ha`,
                 responsible: uap.responsible,
               }))}
               className="border-agro-200"
-              renderActions={(uap) => (
-                <div className="flex gap-2 justify-center">
+              actions={(uap) => (
+                <div className="flex justify-center gap-2">
                   <button
                     onClick={() => navigate(`/uap/editar/${uap.id}`)}
                     className="btn-primary p-1 rounded"

@@ -25,12 +25,12 @@ function UapPage() {
     }
   };
 
-  // Todas as colunas centralizadas
+  // Configuração das colunas com renderização e alinhamento
   const columns = [
-    { key: "name", label: "UAP", align: "center" },
+    { key: "name", label: "UAP", align: "left" },
     { key: "location", label: "LOCALIZAÇÃO", align: "center" },
-    { key: "area", label: "ÁREA", align: "center" },
-    { key: "responsible", label: "RESPONSÁVEL", align: "center" },
+    { key: "area", label: "ÁREA", align: "right" },
+    { key: "responsible", label: "RESPONSÁVEL", align: "left" },
   ];
 
   const filters = [

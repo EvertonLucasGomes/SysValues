@@ -4,21 +4,19 @@ interface Column {
   key: string;
   label: string;
   className?: string;
-  align?: "left" | "center" | "right";
-  render?: (row: Record<string, any>) => ReactNode;
 }
 
 interface DataTableProps {
   columns: Column[];
-  data: Record<string, any>[];
-  renderActions?: (row: Record<string, any>) => ReactNode;
+  data: Record<string, string | number | ReactNode>[];
+  actions?: ReactNode;
   className?: string;
 }
 
 export function DataTable({
   columns,
   data,
-  renderActions,
+  actions,
   className = "",
 }: DataTableProps) {
   return (
@@ -30,19 +28,15 @@ export function DataTable({
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className={`px-6 py-3 text-xs font-bold text-agro-700 uppercase tracking-wider border-b border-agro-200 ${
-                    column.align === "center"
-                      ? "text-center"
-                      : column.align === "right"
-                      ? "text-right"
-                      : "text-left"
-                  } ${column.className || ""}`}
+                  className={`px-6 py-3 text-center text-xs font-bold text-agro-700 uppercase tracking-wider border-b border-agro-200 ${
+                    column.className || ""
+                  }`}
                 >
                   {column.label}
                 </th>
               ))}
-              {renderActions && (
-                <th className="px-6 py-3 text-center text-xs font-bold text-agro-700 uppercase tracking-wider border-b border-agro-200">
+              {actions && (
+                <th className="px-6 py-3 text-right text-xs font-bold text-agro-700 uppercase tracking-wider border-b border-agro-200">
                   Ações
                 </th>
               )}
@@ -54,20 +48,16 @@ export function DataTable({
                 {columns.map((column) => (
                   <td
                     key={column.key}
-                    className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
-                      column.align === "center"
-                        ? "text-center"
-                        : column.align === "right"
-                        ? "text-right"
-                        : "text-left"
-                    } ${column.className || ""}`}
+                    className={`px-6 py-4 whitespace-nowrap text-sm text-neutral-900 font-medium text-center ${
+                      column.className || ""
+                    }`}
                   >
-                    {column.render ? column.render(row) : row[column.key]}
+                    {row[column.key]}
                   </td>
                 ))}
-                {renderActions && (
+                {actions && (
                   <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                    {renderActions(row)}
+                    <div className="flex justify-center">{actions}</div>
                   </td>
                 )}
               </tr>

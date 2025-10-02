@@ -27,16 +27,15 @@ function ColheitaPage() {
     }
   };
 
-  // Colunas centralizadas
   const columns = [
-    { key: "id", label: "N° COLHEITA", align: "center" },
-    { key: "data", label: "DATA", align: "center" },
-    { key: "produto", label: "PRODUTO", align: "center" },
-    { key: "quantidade", label: "QUANTIDADE", align: "center" },
-    { key: "uap", label: "UAP", align: "center" },
-    { key: "responsavel", label: "RESPONSÁVEL", align: "center" },
-    { key: "ciclo", label: "CICLO", align: "center" },
-    { key: "status", label: "STATUS", align: "center" },
+    { key: "id", label: "N° COLHEITA" },
+    { key: "data", label: "DATA" },
+    { key: "produto", label: "PRODUTO" },
+    { key: "quantidade", label: "QUANTIDADE" },
+    { key: "uap", label: "UAP" },
+    { key: "responsavel", label: "RESPONSÁVEL" },
+    { key: "ciclo", label: "CICLO" },
+    { key: "status", label: "STATUS" },
   ];
 
   const filters = [
@@ -112,6 +111,7 @@ function ColheitaPage() {
   return (
     <SideMenu title="COLHEITA">
       <div className="space-y-6">
+        {/* Header */}
         <PageHeader
           title="Gestão de Colheitas"
           subtitle="Controle e acompanhamento das colheitas"
@@ -125,14 +125,17 @@ function ColheitaPage() {
           </button>
         </PageHeader>
 
+        {/* Filters */}
         <FilterBar
           filters={filters}
           onFilterChange={(_key, _value) => {
-            // Implementar filtros
+            // Implementar filtros baseados em key e value
           }}
         />
 
+        {/* Main Content */}
         <div className="flex gap-6">
+          {/* Tabela */}
           <div className="flex-1">
             <DataTable
               columns={columns}
@@ -147,7 +150,7 @@ function ColheitaPage() {
                 status: harvest.status,
               }))}
               className="border-agro-200"
-              renderActions={(row) => (
+              actions={(row) => (
                 <div className="flex justify-center gap-2">
                   <button
                     onClick={() => navigate(`/colheita/visualizar/${row.id}`)}
