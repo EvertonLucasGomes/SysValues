@@ -1,172 +1,96 @@
-import { useState, useCallback } from "react";
-import { insumoService } from "@/services/api/insumoService";
-import type { Insumo, CreateInsumoDto, UpdateInsumoDto } from "@/types/insumo";
+// apps/frontend/src/hooks/useInsumos.ts
 
-export function useInsumo() {
-  const [insumos, setInsumos] = useState<Insumo[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+import { useCallback } from "react";
+import { insumoService } from "../services/api/insumoService"; 
 
-  // Modifying the fetchInsumos function to accept pagination arguments
-  const fetchInsumos = useCallback(async (page: number, limit: number) => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Assuming a new method findAllPaginated is available in insumoService
-      const response = await insumoService.findAllPaginated(page, limit);
-      // The response from the backend is now an object with data and total,
-      // so you set the insumos with response.data
-      setInsumos(response.data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao carregar insumos");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+import type { 
+    Insumo, 
+    CreateInsumoDto, 
+    UpdateInsumoDto,
+    PaginatedInsumos,
+} from "../services/api"; 
 
-  const createInsumo = useCallback(async (data: CreateInsumoDto) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const newInsumo = await insumoService.create(data);
-      setInsumos((prev) => [newInsumo, ...prev]);
-      return newInsumo;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao criar insumo");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+import { usePaginatedFetch, type PaginatedFetchResult } from "./usePaginatedFetch";
 
-  const updateInsumo = useCallback(
-    async (id: string, data: UpdateInsumoDto) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const updatedInsumo = await insumoService.update(id, data);
-        setInsumos((prev) =>
-          prev.map((insumo) => (insumo.id === id ? updatedInsumo : insumo))
-        );
-        return updatedInsumo;
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Erro ao atualizar insumo"
-        );
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
-
-  const deleteInsumo = useCallback(async (id: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await insumoService.delete(id);
-      setInsumos((prev) => prev.filter((insumo) => insumo.id !== id));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao deletar insumo");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  return {
-    insumos,
-    loading,
-    error,
-    fetchInsumos,
-    createInsumo,
-    updateInsumo,
-    deleteInsumo,
-  };
+export interface UseInsumosResult extends Omit<PaginatedFetchResult<Insumo>, 'data' | 'refresh'> {
+    insumos: Insumo[];
+    refreshInsumos: () => void;
+    createInsumo: (data: CreateInsumoDto) => Promise<void>;
+    updateInsumo: (id: string, data: UpdateInsumoDto) => Promise<void>;
+    deleteInsumo: (id: string) => Promise<void>;
 }
 
+// REMOVIDO: 'export' da linha de função
+function useInsumos(): UseInsumosResult {
+    
+    const fetchInsumosPaginated = useCallback(
+        (page: number, limit: number): Promise<PaginatedInsumos> => {
+            return insumoService.findAllPaginated(page, limit);
+        },
+        []
+    );
 
-// import { useState, useCallback } from "react";
-// import { insumoService } from "@/services/api/insumoService";
-// import type { Insumo, CreateInsumoDto, UpdateInsumoDto } from "@/types/insumo";
+    const {
+        data,
+        loading,
+        error,
+        currentPage,
+        totalPages,
+        itemsPerPage,
+        totalItems,
+        setPage,
+        refresh
+    } = usePaginatedFetch<Insumo>({
+        fetchFn: fetchInsumosPaginated,
+        initialLimit: 10,
+    });
 
-// export function useInsumo() {
-//   const [insumos, setInsumos] = useState<Insumo[]>([]);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState<string | null>(null);
+    const refreshInsumos = refresh;
 
-//   const fetchInsumos = useCallback(async () => {
-//     setLoading(true);
-//     setError(null);
-//     try {
-//       const data = await insumoService.getAll();
-//       setInsumos(data);
-//     } catch (err) {
-//       setError(err instanceof Error ? err.message : "Erro ao carregar insumos");
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, []);
+    const createInsumo = useCallback(async (data: CreateInsumoDto) => {
+        try {
+            await insumoService.create(data);
+            refreshInsumos();
+        } catch (err) {
+            throw err;
+        }
+    }, [refreshInsumos]);
 
-//   const createInsumo = useCallback(async (data: CreateInsumoDto) => {
-//     setLoading(true);
-//     setError(null);
-//     try {
-//       const newInsumo = await insumoService.create(data);
-//       setInsumos((prev) => [newInsumo, ...prev]);
-//       return newInsumo;
-//     } catch (err) {
-//       setError(err instanceof Error ? err.message : "Erro ao criar insumo");
-//       throw err;
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, []);
+    const updateInsumo = useCallback(async (id: string, data: UpdateInsumoDto) => {
+        try {
+            await insumoService.update(id, data);
+            refreshInsumos();
+        } catch (err) {
+            throw err;
+        }
+    }, [refreshInsumos]);
 
-//   const updateInsumo = useCallback(
-//     async (id: string, data: UpdateInsumoDto) => {
-//       setLoading(true);
-//       setError(null);
-//       try {
-//         const updatedInsumo = await insumoService.update(id, data);
-//         setInsumos((prev) =>
-//           prev.map((insumo) => (insumo.id === id ? updatedInsumo : insumo))
-//         );
-//         return updatedInsumo;
-//       } catch (err) {
-//         setError(
-//           err instanceof Error ? err.message : "Erro ao atualizar insumo"
-//         );
-//         throw err;
-//       } finally {
-//         setLoading(false);
-//       }
-//     },
-//     []
-//   );
+    const deleteInsumo = useCallback(async (id: string) => {
+        try {
+            await insumoService.delete(id);
+            refreshInsumos();
+        } catch (err) {
+            throw err;
+        }
+    }, [refreshInsumos]);
 
-//   const deleteInsumo = useCallback(async (id: string) => {
-//     setLoading(true);
-//     setError(null);
-//     try {
-//       await insumoService.delete(id);
-//       setInsumos((prev) => prev.filter((insumo) => insumo.id !== id));
-//     } catch (err) {
-//       setError(err instanceof Error ? err.message : "Erro ao deletar insumo");
-//       throw err;
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, []);
+    return {
+        insumos: data,
+        loading,
+        error,
+        currentPage,
+        totalPages,
+        itemsPerPage,
+        totalItems,
+        setPage,
+        
+        refreshInsumos,
+        createInsumo,
+        updateInsumo,
+        deleteInsumo,
+    };
+}
 
-//   return {
-//     insumos,
-//     loading,
-//     error,
-//     fetchInsumos,
-//     createInsumo,
-//     updateInsumo,
-//     deleteInsumo,
-//   };
-// }
+// ADICIONADO: Exportação Padrão (RESOLVE O SYNTAXERROR)
+export default useInsumos;
+

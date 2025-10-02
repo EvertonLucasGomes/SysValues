@@ -36,6 +36,7 @@ export type {
   CreateProductRequest,
   UpdateProductRequest,
   ProductsFilters,
+  PaginatedProducts // <-- CORRETO
 } from "./productService";
 export type {
   Harvest,
@@ -44,18 +45,26 @@ export type {
   //adicionados agora
   PaginatedHarvests,
   Meta,
-  PaginatedResponse,
+  PaginatedResponse, // <-- TIPO BASE DE PAGINAÇÃO
 } from "./harvestService";
 export type {
   SaleWithItems,
   CreateSaleRequest,
   UpdateSaleRequest,
   SaleFilters,
-  PaginatedSales, //essa linha adicionada
+  PaginatedSales, // <-- CORRETO
 } from "./salesService";
 export type { DashboardStatistics } from "./dashboardService";
 export type { Alert, RecentActivity } from "./alertService";
-// export type { Insumo } from "../../../shared/types/insumo";
+
+// CORREÇÃO FINAL: Centralizamos a exportação dos tipos de Insumo no SERVICE
+export type {
+  Insumo,
+  CreateInsumoDto,
+  UpdateInsumoDto,
+  EUnit // <--- ADICIONADO EUNIT AQUI (Se ele estiver no insumoService.ts, senão use o caminho do shared)
+} from "./insumoService"; // <-- IMPORTANDO DO SERVIÇO, NÃO DE CAMINHO LONGO
+
 export type { ApiResponse, ApiError } from "./client";
 
-// Convenience exports (import services in components instead)
+export type { PaginatedInsumos } from "./insumoService";

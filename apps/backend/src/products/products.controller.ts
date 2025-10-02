@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
   ParseUUIDPipe,
+  ParseIntPipe, // ADICIONADO
 } from "@nestjs/common";
 import { ProductsService } from "./products.service";
 import {
@@ -56,15 +57,20 @@ export class ProductsController {
     return this.productsService.create(dto);
   }
 
-  @Get()
+  @Get() // <--- MÉTODO PAGINADO
   @RequirePermissions(EPermission.READ_PRODUCT)
-  @ApiOperation({ summary: "Listar todos os produtos" })
+  @ApiOperation({ summary: "Listar todos os produtos (Paginado)" })
   @ApiResponse({
     status: 200,
-    description: "Lista de produtos retornada com sucesso",
+    description: "Lista de produtos paginada retornada com sucesso",
   })
-  async findAll() {
-    return this.productsService.findAll();
+  async findAllPaginated( // NOVO NOME do método
+    // Recebe page e limit, garantindo que sejam números inteiros
+    @Query('page', ParseIntPipe) page: number = 1,
+    @Query('limit', ParseIntPipe) limit: number = 10
+  ) {
+    // A chamada agora usará o novo método de serviço para lidar com a paginação
+    return this.productsService.findAllPaginated(page, limit);
   }
 
   @Get("filter/status")
@@ -140,3 +146,5 @@ export class ProductsController {
     return this.productsService.decreaseStock(id, quantity);
   }
 }
+
+
