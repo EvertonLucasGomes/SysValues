@@ -12,3 +12,24 @@ export interface Insumo {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// NOVOS TIPOS ADICIONADOS AQUI:
+export interface CreateInsumoDto {
+  name: string;
+  type: string;
+  amount: number;
+  unit: EUnit;
+  supplier?: string;
+  expiryDate?: Date;
+  observations?: string;
+}
+
+export interface UpdateInsumoDto {
+  name?: string;
+  type?: string;
+  amount?: number;
+  unit?: EUnit;
+  supplier?: string;
+  expiryDate?: Date;
+  observations?: string;
+}

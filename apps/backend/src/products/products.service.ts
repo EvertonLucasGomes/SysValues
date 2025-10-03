@@ -17,9 +17,39 @@ export class ProductsService {
     return await this.productRepository.create(createProductDto);
   }
 
-  async findAll(): Promise<Product[]> {
-    return await this.productRepository.findAll();
+  // MÉTODO findAll() ANTIGO REMOVIDO E SUBSTITUÍDO POR findAllPaginated
+  
+  async findAllPaginated(page: number, limit: number) {
+    const offset = (page - 1) * limit;
+
+    // 1. Assumimos que o repositório retornará [produtos, totalCount]
+    // O erro de compilação será resolvido quando a Interface for atualizada.
+    const [products, total] = await this.productRepository.findAndCount({
+      limit,
+      offset,
+    });
+
+    // 2. Calcula o total de páginas
+    const totalPages = Math.ceil(total / limit);
+
+    // 3. Retorna o formato { data, meta } que o Frontend espera (B3)
+    return {
+      data: products,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+      },
+    };
   }
+
+  // O método findAll() antigo não é mais utilizado para a listagem principal, 
+  // mas pode ser mantido se necessário em outras partes do sistema.
+  // async findAll(): Promise<Product[]> {
+  //   return await this.productRepository.findAll();
+  // }
+  
 
   async findOne(id: string): Promise<Product> {
     const product = await this.productRepository.findOne(id);

@@ -1,5 +1,21 @@
 import { apiClient } from "./client";
 
+//Ação 1.1 - adicionar interfaces de paginação
+
+export interface Meta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PaginatedResponse<T>{
+  data: T[];
+  meta: Meta;
+}
+
+export type PaginatedHarvests = PaginatedResponse<Harvest>;
+
 export interface Harvest {
   id: string;
   harvestDate: string;
@@ -43,10 +59,13 @@ export interface UpdateHarvestRequest {
 }
 
 export class HarvestService {
-  async getAllHarvests(): Promise<Harvest[]> {
-    return await apiClient.get<Harvest[]>("/harvests");
-  }
 
+  async getAllHarvests(page: number, limit: number): Promise<PaginatedHarvests> {
+    return await apiClient.get<PaginatedHarvests>(
+      `/harvests?page=${page}&limit=${limit}`
+    );
+  }
+  
   async getHarvestById(id: string): Promise<Harvest> {
     return await apiClient.get<Harvest>(`/harvests/${id}`);
   }

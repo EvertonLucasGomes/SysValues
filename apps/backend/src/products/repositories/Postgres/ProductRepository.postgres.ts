@@ -2,11 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { CreateProductDto } from "@shared/dto/product/create-product.dto";
 import { UpdateProductDto } from "@shared/dto/product/update-product.dto";
-import { IProductRepository } from "../product.repository.interface";
+// Importa a Interface e o PaginationParams
+import { IProductRepository, PaginationParams } from "../product.repository.interface"; 
 import { Product } from "@shared/types/product";
 import { EProductStatus, ProductStatus } from "@shared/enums/product.enum";
 
-// Mapeamento entre enums
+// Mapeamento entre enums (mantido)
 const statusMap = {
   [ProductStatus.AVAILABLE]: EProductStatus.AVAILABLE,
   [ProductStatus.OUT_OF_STOCK]: EProductStatus.OUT_OF_STOCK,
@@ -36,6 +37,22 @@ export class ProductRepositoryPostgres implements IProductRepository {
       orderBy: { createdAt: "desc" },
     });
     return products.map(toDomainProduct);
+  }
+
+  // NOVO MÉTODO PAGINADO (B3): findAndCount
+  async findAndCount({ limit, offset }: PaginationParams): Promise<[Product[], number]> {
+    // 1. Executamos a busca paginada e a contagem total de forma otimizada
+    const [productRecords, total] = await this.prisma.$transaction([
+      this.prisma.product.findMany({
+        skip: offset, // Usa 'offset' do PaginationParams
+        take: limit,  // Usa 'limit' do PaginationParams
+        orderBy: { createdAt: "desc" },
+      }),
+      this.prisma.product.count(), // 2. Contagem total
+    ]);
+
+    // 3. Retornamos a tupla [itens mapeados para o domínio, contagem total]
+    return [productRecords.map(toDomainProduct), total];
   }
 
   async findOne(id: string): Promise<Product | null> {
@@ -102,3 +119,4 @@ export class ProductRepositoryPostgres implements IProductRepository {
     await this.prisma.product.delete({ where: { id } });
   }
 }
+

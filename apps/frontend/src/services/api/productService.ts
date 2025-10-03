@@ -1,4 +1,6 @@
 import { apiClient } from "./client";
+// Importa o tipo PaginatedResponse Padrão
+import type { PaginatedResponse } from "./index"; 
 
 export interface Product {
   id: string;
@@ -40,9 +42,16 @@ export interface ProductsFilters {
   limit?: number;
 }
 
+// NOVO TIPO: Define o tipo paginado para Produtos
+export type PaginatedProducts = PaginatedResponse<Product>;
+
 export class ProductService {
-  async getAllProducts(): Promise<Product[]> {
-    return await apiClient.get<Product[]>("/products");
+  
+  // MODIFICADO: Substitui getAllProducts por uma versão paginada
+  async getAllProducts(page: number, limit: number): Promise<PaginatedProducts> {
+    return await apiClient.get<PaginatedProducts>(
+      `/products?page=${page}&limit=${limit}`
+    );
   }
 
   async getProductById(id: string): Promise<Product> {
@@ -64,6 +73,9 @@ export class ProductService {
     return await apiClient.delete<void>(`/products/${id}`);
   }
 
+  // Os métodos de filtro abaixo devem ser adaptados para paginação em uma melhoria futura, 
+  // mas mantemos o retorno não paginado por enquanto para cumprir a B3.
+  
   async getProductsByCategory(category: string): Promise<Product[]> {
     return await apiClient.get<Product[]>(
       `/products/filter/category?category=${category}`
