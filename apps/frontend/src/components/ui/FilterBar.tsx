@@ -35,7 +35,8 @@ export function FilterBar({
         </h3>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          {filters.map((filter) => (
+
+          {filters != null ? filters.map((filter) => (
             <select
               key={filter.key}
               className="input-field max-w-xs border-agro-200"
@@ -48,7 +49,7 @@ export function FilterBar({
                 </option>
               ))}
             </select>
-          ))}
+          )) : ""}
 
           {children}
         </div>

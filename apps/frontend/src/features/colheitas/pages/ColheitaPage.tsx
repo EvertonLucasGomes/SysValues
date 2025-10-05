@@ -6,6 +6,7 @@ import { DataTable } from "@/components/ui/DataTable";
 import { FaPlus, FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { useHarvest } from "@/hooks/useHarvest";
 import { Pagination } from "@/components/ui/Pagination";
+import { useQuery } from "@tanstack/react-query";
 // ***************
 // IMPORTANTE:
 // Você deve ter este import na main, mas ele não está no topo.
