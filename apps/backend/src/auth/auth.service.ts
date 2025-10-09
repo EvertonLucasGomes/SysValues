@@ -3,8 +3,8 @@ import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "../users/users.service";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "@shared/dto/user/create.user.dto";
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RegisterCreatedEvent } from "src/events/register-created.event";
+import { Subject } from 'src/observer/subject';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private eventEmitter: EventEmitter2
+    private readonly subject: Subject<RegisterCreatedEvent>
   ) {}
 
   async validateUser(
@@ -79,8 +79,7 @@ export class AuthService {
     const user = await this.usersService.create(userToCreate);
     this.logger.log(`User registered successfully: ${user.email.getEmail()}`);
 
-    this.eventEmitter.emit(
-      'register.created',
+    this.subject.notify(
       new RegisterCreatedEvent(user.name.getName(), user.email.getEmail()),
     );
 

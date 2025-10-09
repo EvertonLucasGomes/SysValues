@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
 import { RegisterCreatedEvent } from '../events/register-created.event';
+import { Observer } from 'src/observer/subject';
 
 @Injectable()
-export class LogRegisterListener {
-  @OnEvent('register.created')
-  handleOrderCreatedEvent(event: RegisterCreatedEvent) {
+export class LogRegisterListener implements Observer<RegisterCreatedEvent>{
+  update(event: RegisterCreatedEvent): void {
     console.log(`📝 Log: Usuario ${event.name} criado. Com email: ${event.userEmail}`);
   }
 }
