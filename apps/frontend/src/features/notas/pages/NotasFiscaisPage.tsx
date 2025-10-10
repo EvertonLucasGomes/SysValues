@@ -27,15 +27,18 @@ function NotasFiscaisPage() {
         ? "NF-e Entrada"
         : "NF-e Transferência",
     destino: invoice.customer || invoice.supplier || "N/A",
-    valorTotal: `R$ ${invoice.finalAmount.toLocaleString("pt-BR", {
+    valorTotal: `R$ ${invoice.totalAmount.toLocaleString("pt-BR", {
       minimumFractionDigits: 2,
     })}`,
     data: new Date(invoice.issueDate).toLocaleDateString("pt-BR"),
     status: invoice.status,
-    produtos: invoice.items
-      .map((item) => `${item.productName} - ${item.quantity} ${item.unit}`)
-      .join(", "),
+    produtos: []
   }));
+
+ //   invoice.items
+  //    .map((item) => `${item.productName} - ${item.quantity} ${item.unit}`)
+  //    .join(", "),
+ // }))
 
   const columns = [
     { key: "numero", label: "Nº NOTA" },

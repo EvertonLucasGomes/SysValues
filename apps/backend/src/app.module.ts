@@ -12,6 +12,8 @@ import { UapsModule } from "./uaps/uaps.module";
 import { InputMaterialEntryModule } from "./inputMaterialEntry/inputMaterialEntry.module";
 import { AlertsModule } from "./alerts/alerts.module";
 import { InsumosModule } from "./insumos/insumos.module";
+import { EventEmitterModule } from "@nestjs/event-emitter";
+import { SellListener } from "./listeners/sellListener";
 
 @Module({
   imports: [
@@ -30,6 +32,10 @@ import { InsumosModule } from "./insumos/insumos.module";
     InputMaterialEntryModule,
     AlertsModule,
     InsumosModule,
+    EventEmitterModule.forRoot()
   ],
+  providers: [
+    SellListener
+  ]
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Inject, Module } from "@nestjs/common";
 import { SalesController } from "./sales.controller";
 import { SalesService } from "./sales.service";
 import { SaleRepositoryPostgres } from "./repositories/Postgres/SaleRepository.postgres";
@@ -17,7 +17,7 @@ import { ProductsModule } from "../products/products.module";
     {
       provide: SALE_REPOSITORY,
       useClass: SaleRepositoryPostgres,
-    },
+    }
   ],
   exports: [SalesService],
 })
