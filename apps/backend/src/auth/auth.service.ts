@@ -1,10 +1,11 @@
-import { ConflictException, Injectable, Logger } from "@nestjs/common";
+import { ConflictException, Inject, Injectable, Logger } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "../users/users.service";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "@shared/dto/user/create.user.dto";
 import { RegisterCreatedEvent } from "src/events/register-created.event";
 import { Subject } from 'src/observer/subject';
+import { LoginEvent } from "src/events/login-event";
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,10 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private readonly subject: Subject<RegisterCreatedEvent>
+    @Inject('REGISTER_SUBJECT')
+    private readonly subject: Subject<RegisterCreatedEvent>,
+    @Inject('LOGIN_SUBJECT')
+    private readonly subjectLogin: Subject<LoginEvent>,
   ) {}
 
   async validateUser(
@@ -49,6 +53,8 @@ export class AuthService {
 
     // Buscar dados completos do usuário para obter a role
     const fullUser = await this.usersService.findOne(user.id);
+
+    this.subjectLogin.notify(new LoginEvent(fullUser.email.getEmail()))
 
     return {
       access_token: token,
